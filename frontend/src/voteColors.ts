@@ -1,13 +1,12 @@
 const VOTE_PALETTE: readonly string[] = [
-  '#3b82f6',
-  '#10b981',
-  '#f59e0b',
-  '#ef4444',
-  '#8b5cf6',
-  '#ec4899',
-  '#14b8a6',
-  '#f97316',
-  '#6366f1',
+  '#60a5fa',
+  '#34d399',
+  '#fbbf24',
+  '#a78bfa',
+  '#f472b6',
+  '#2dd4bf',
+  '#fb923c',
+  '#818cf8',
 ]
 
 export function colorForValue(value: string, fibSeries: string[]): string {

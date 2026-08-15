@@ -74,7 +74,7 @@ function RoomPage(): ReactElement {
       ? 'Reveal whenever you’re ready, or wait for a few more votes.'
       : 'Once your team starts voting, you’ll be able to reveal the results here.'
   } else if (isAdmin && revealed) {
-    headline = 'Results are in'
+    headline = "Here's what the team said"
     subtext = 'Discuss as a team, then reset to estimate the next ticket.'
   } else if (!revealed) {
     headline = 'Time to estimate'
@@ -95,7 +95,7 @@ function RoomPage(): ReactElement {
       />
 
       <div className="flex flex-1">
-        {isAdmin && <Sidebar estimators={estimators} revealed={revealed} fibSeries={fibSeries} />}
+        {isAdmin && <Sidebar estimators={estimators} />}
 
         <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10">
           <div className="max-w-sm text-center">
