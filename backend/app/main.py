@@ -25,6 +25,11 @@ class CreateRoomResponse(BaseModel):
     admin_token: str
 
 
+@app.get("/")
+def health_check() -> dict:
+    return {"status": "ok"}
+
+
 @app.post("/rooms", response_model=CreateRoomResponse)
 def create_room() -> CreateRoomResponse:
     room = room_store.create_room()

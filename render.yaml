@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: sprint-poker-api
+    runtime: python
+    repo: https://github.com/kathiresh-i2i/sprint-poker.git
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /
+
+  - type: web
+    name: sprint-poker-frontend
+    runtime: static
+    repo: https://github.com/kathiresh-i2i/sprint-poker.git
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    plan: free
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://sprint-poker-api.onrender.com
+      - key: VITE_WS_BASE_URL
+        value: wss://sprint-poker-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
