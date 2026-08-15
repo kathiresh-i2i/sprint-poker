@@ -10,7 +10,7 @@ services:
     healthCheckPath: /
 
   - type: web
-    name: sprint-poker
+    name: sprint-poker-app
     runtime: static
     repo: https://github.com/kathiresh-i2i/sprint-poker.git
     rootDir: frontend
