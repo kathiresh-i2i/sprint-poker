@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+@import './theme/theme.variables.css';
+@import 'primereact/resources/themes/lara-light-teal/theme.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primeicons/primeicons.css';
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* No special focus outlines/borders on inputs, buttons, or links */
+.p-inputtext:enabled:focus,
+.p-inputtext.p-variant-filled:enabled:focus,
+.p-button:focus,
+.p-checkbox:not(.p-disabled):has(.p-checkbox-input:focus-visible) .p-checkbox-box,
+.p-togglebutton:not(.p-disabled):has(.p-togglebutton-input:focus-visible) .p-button {
+  border-color: var(--color-border-strong) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+:focus,
+:focus-visible {
+  outline: none;
+}
