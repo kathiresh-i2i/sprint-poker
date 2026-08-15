@@ -110,13 +110,13 @@ function CreateRoomPage(): ReactElement {
           style={{ background: 'radial-gradient(closest-side, var(--color-accent-soft), transparent)' }}
         />
 
-        <div className="relative mx-auto flex w-full max-w-md flex-col items-center gap-8">
+        <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-10">
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-(--color-accent-soft) shadow-(--shadow-sm)">
               <i className="pi pi-table text-2xl text-(--color-accent)" />
             </div>
             <h1 className="text-4xl font-bold tracking-tight text-(--color-text-primary)">Sprint Poker</h1>
-            <p className="max-w-sm text-(--color-text-secondary)">
+            <p className="max-w-md text-(--color-text-secondary)">
               Planning poker for agile teams. Create a room, share the link, and estimate together in seconds.
             </p>
           </div>
@@ -128,16 +128,16 @@ function CreateRoomPage(): ReactElement {
               loading={isCreating}
               onClick={handleCreate}
               size="large"
-              className="w-full max-w-xs"
+              className="w-full max-w-sm"
             />
             {error && <p className="text-sm text-(--color-danger)">{error}</p>}
           </div>
 
-          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3">
             {HIGHLIGHTS.map((item) => (
               <div
                 key={item.title}
-                className="flex flex-col items-center gap-2 rounded-xl border border-(--color-border) bg-(--color-surface) px-4 py-5 text-center shadow-(--shadow-xs)"
+                className="flex flex-col items-center gap-2 rounded-xl border border-(--color-border) bg-(--color-surface) px-6 py-7 text-center shadow-(--shadow-xs)"
               >
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-(--color-accent-soft)">
                   <i className={`pi ${item.icon} text-(--color-accent)`} />
