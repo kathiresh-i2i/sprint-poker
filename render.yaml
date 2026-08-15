@@ -9,14 +9,12 @@ services:
     plan: free
     healthCheckPath: /
 
-  - type: web
+  - type: static
     name: sprint-poker-frontend
-    runtime: static
     repo: https://github.com/kathiresh-i2i/sprint-poker.git
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-    plan: free
     envVars:
       - key: VITE_API_BASE_URL
         value: https://sprint-poker-api.onrender.com
