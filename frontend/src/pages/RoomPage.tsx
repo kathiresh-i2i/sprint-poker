@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchRoom } from '../api'
 import { getAdminToken } from '../adminToken'
+import { getParticipantName, saveParticipantName } from '../participantName'
 import { useRoomSocket } from '../hooks/useRoomSocket'
 import JoinForm from '../components/JoinForm'
 import TopBar from '../components/TopBar'
@@ -16,8 +17,13 @@ type RoomLookupStatus = 'loading' | 'found' | 'not-found'
 function RoomPage(): ReactElement {
   const { roomId = '' } = useParams<{ roomId: string }>()
   const [lookupStatus, setLookupStatus] = useState<RoomLookupStatus>('loading')
-  const [name, setName] = useState<string | null>(null)
+  const [name, setName] = useState<string | null>(() => getParticipantName(roomId))
   const [adminName, setAdminName] = useState<string | null>(null)
+
+  const handleJoin = (joinedName: string): void => {
+    saveParticipantName(roomId, joinedName)
+    setName(joinedName)
+  }
 
   const adminToken = getAdminToken(roomId)
 
@@ -51,7 +57,7 @@ function RoomPage(): ReactElement {
   }
 
   if (!name) {
-    return <JoinForm onJoin={setName} isCreator={Boolean(adminToken)} adminName={adminName} />
+    return <JoinForm onJoin={handleJoin} isCreator={Boolean(adminToken)} adminName={adminName} />
   }
 
   const revealed = roomState?.revealed ?? false
