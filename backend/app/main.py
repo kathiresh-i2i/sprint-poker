@@ -41,7 +41,8 @@ def get_room(room_id: str) -> dict:
     room = room_store.get(room_id)
     if room is None:
         raise HTTPException(status_code=404, detail="Room not found")
-    return {"room_id": room.id}
+    admin = next((p for p in room.participants.values() if p.is_admin), None)
+    return {"room_id": room.id, "admin_name": admin.name if admin else None}
 
 
 @app.websocket("/ws/rooms/{room_id}")

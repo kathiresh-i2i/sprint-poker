@@ -217,18 +217,6 @@ function CreateRoomPage(): ReactElement {
         </div>
       </section>
 
-      <section className="px-4 py-16 text-center">
-        <div className="mx-auto w-full max-w-2xl">
-          <h2 className="text-2xl font-bold text-(--color-text-primary)">Why estimate with story points?</h2>
-          <p className="mt-3 text-sm text-(--color-text-secondary)">
-            Story points measure the relative effort and complexity of a ticket, not the exact hours it will take.
-            Comparing a new ticket to ones your team has already estimated keeps estimates consistent sprint over
-            sprint — and voting privately before revealing avoids anchoring everyone to the first number someone
-            says out loud.
-          </p>
-        </div>
-      </section>
-
       <footer className="border-t border-(--color-border) px-4 py-8 text-center text-xs text-(--color-text-muted)">
         Built for agile teams who just want to estimate and get back to work.
       </footer>

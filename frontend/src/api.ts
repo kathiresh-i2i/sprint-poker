@@ -13,7 +13,9 @@ export async function createRoom(): Promise<CreateRoomResponse> {
   return response.json()
 }
 
-export async function fetchRoom(roomId: string): Promise<{ room_id: string } | null> {
+export async function fetchRoom(
+  roomId: string,
+): Promise<{ room_id: string; admin_name: string | null } | null> {
   const response = await fetch(`${API_BASE_URL}/rooms/${roomId}`)
   if (response.status === 404) {
     return null

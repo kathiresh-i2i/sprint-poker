@@ -17,6 +17,7 @@ function RoomPage(): ReactElement {
   const { roomId = '' } = useParams<{ roomId: string }>()
   const [lookupStatus, setLookupStatus] = useState<RoomLookupStatus>('loading')
   const [name, setName] = useState<string | null>(null)
+  const [adminName, setAdminName] = useState<string | null>(null)
 
   const adminToken = getAdminToken(roomId)
 
@@ -25,6 +26,7 @@ function RoomPage(): ReactElement {
     fetchRoom(roomId).then((room) => {
       if (cancelled) return
       setLookupStatus(room ? 'found' : 'not-found')
+      setAdminName(room?.admin_name ?? null)
     })
     return () => {
       cancelled = true
@@ -49,7 +51,7 @@ function RoomPage(): ReactElement {
   }
 
   if (!name) {
-    return <JoinForm onJoin={setName} isCreator={Boolean(adminToken)} />
+    return <JoinForm onJoin={setName} isCreator={Boolean(adminToken)} adminName={adminName} />
   }
 
   const revealed = roomState?.revealed ?? false

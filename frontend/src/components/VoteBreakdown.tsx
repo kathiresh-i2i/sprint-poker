@@ -35,39 +35,23 @@ function VoteBreakdown({ estimators, fibSeries }: VoteBreakdownProps): ReactElem
 
   if (hasMajority) {
     return (
-      <div className="flex flex-col items-center gap-4">
-        <motion.div
-          className="flex flex-col items-center gap-1 rounded-2xl px-10 py-6"
-          style={{ background: hexToRgba(topColor, 0.1) }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-        >
-          <span className="text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
-            Team estimate
-          </span>
-          <span className="text-6xl font-extrabold" style={{ color: topColor }}>
-            {top.value}
-          </span>
-          <span className="text-xs text-(--color-text-secondary)">
-            {top.count} of {total} agree
-          </span>
-        </motion.div>
-
-        {rest.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2">
-            {rest.map((group) => (
-              <div
-                key={group.value}
-                className="flex items-center gap-1.5 rounded-full border border-(--color-border) px-3 py-1 text-xs text-(--color-text-secondary)"
-              >
-                <span className="h-2 w-2 rounded-full" style={{ background: colorForValue(group.value, fibSeries) }} />
-                {group.value} × {group.count}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <motion.div
+        className="flex flex-col items-center gap-1 rounded-2xl px-10 py-6"
+        style={{ background: hexToRgba(topColor, 0.1) }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      >
+        <span className="text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
+          Team estimate
+        </span>
+        <span className="text-6xl font-extrabold" style={{ color: topColor }}>
+          {top.value}
+        </span>
+        <span className="text-xs text-(--color-text-secondary)">
+          {top.count} of {total} agree
+        </span>
+      </motion.div>
     )
   }
 
