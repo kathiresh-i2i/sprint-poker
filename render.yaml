@@ -9,8 +9,9 @@ services:
     plan: free
     healthCheckPath: /
 
-  - type: static
+  - type: web
     name: sprint-poker-frontend
+    runtime: static
     repo: https://github.com/kathiresh-i2i/sprint-poker.git
     rootDir: frontend
     buildCommand: npm install && npm run build
