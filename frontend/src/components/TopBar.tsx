@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 import type { ConnectionStatus } from '../hooks/useRoomSocket'
 import CopyLinkChip from './CopyLinkChip'
+import Logo from './Logo'
 import UserBadge from './UserBadge'
 
 interface TopBarProps {
@@ -18,9 +19,7 @@ function TopBar({ status, shareLink, shareDisplayPath, myName, isAdmin }: TopBar
     <header className="flex items-center justify-between border-b border-(--color-border) bg-(--color-surface) px-6 py-3">
       <div className="flex items-center gap-3">
         <Link to="/" className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-(--color-accent-soft)">
-            <i className="pi pi-table text-sm text-(--color-accent)" />
-          </div>
+          <Logo size="sm" variant="accent" />
           <span className="font-semibold text-(--color-text-primary)">Sprint Poker</span>
         </Link>
         {status !== 'open' && (

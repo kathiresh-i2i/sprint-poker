@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import type { Participant } from '../types'
+import ParticipantRow from './ParticipantRow'
 
 interface SidebarProps {
   estimators: Participant[]
@@ -22,31 +23,7 @@ function Sidebar({ estimators }: SidebarProps): ReactElement {
       ) : (
         <ul className="flex flex-col gap-1.5">
           {estimators.map((participant) => (
-            <li
-              key={participant.id}
-              className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-(--color-neutral-soft)"
-            >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-(--color-neutral-soft) text-xs font-semibold text-(--color-text-secondary)">
-                {participant.name.charAt(0).toUpperCase()}
-              </div>
-              <span className="flex-1 truncate text-sm text-(--color-text-primary)">{participant.name}</span>
-
-              {participant.has_voted ? (
-                <span
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--color-success-soft) text-(--color-success)"
-                  title="Voted"
-                >
-                  <i className="pi pi-check text-xs" />
-                </span>
-              ) : (
-                <span
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--color-neutral-soft) text-(--color-text-muted)"
-                  title="Voting"
-                >
-                  <i className="pi pi-clock text-xs" />
-                </span>
-              )}
-            </li>
+            <ParticipantRow key={participant.id} participant={participant} />
           ))}
         </ul>
       )}

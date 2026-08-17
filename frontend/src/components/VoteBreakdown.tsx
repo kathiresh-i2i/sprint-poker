@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
 import type { ReactElement } from 'react'
 import type { Participant } from '../types'
-import { colorForValue, hexToRgba } from '../voteColors'
+import { colorForValue } from '../voteColors'
+import VoteResultCard from './VoteResultCard'
 
 interface VoteBreakdownProps {
   estimators: Participant[]
@@ -24,6 +24,13 @@ function groupVotes(estimators: Participant[]): VoteGroup[] {
     .sort((a, b) => b.count - a.count || Number(a.value) - Number(b.value))
 }
 
+function summaryText(groups: VoteGroup[], total: number, isUnanimous: boolean, isLeaderClear: boolean): string {
+  const [top] = groups
+  if (isUnanimous) return `Everyone agrees — all ${total} voted the same`
+  if (isLeaderClear) return `${top.count} of ${total} leaned toward ${top.value} — not a full agreement`
+  return 'No clear leader — the team is evenly split'
+}
+
 function VoteBreakdown({ estimators, fibSeries }: VoteBreakdownProps): ReactElement | null {
   const groups = groupVotes(estimators)
   if (groups.length === 0) return null
@@ -37,70 +44,29 @@ function VoteBreakdown({ estimators, fibSeries }: VoteBreakdownProps): ReactElem
     <div className="flex flex-col items-center gap-6">
       {isUnanimous ? (
         <span className="rounded-full bg-(--color-success-soft) px-3 py-1 text-xs font-semibold text-(--color-success)">
-          🎉 Everyone agrees — all {total} voted the same
+          🎉 {summaryText(groups, total, isUnanimous, isLeaderClear)}
         </span>
-      ) : isLeaderClear ? (
-        <p className="text-sm font-medium text-(--color-text-secondary)">
-          {top.count} of {total} leaned toward {top.value} — not a full agreement
-        </p>
       ) : (
         <p className="text-sm font-medium text-(--color-text-secondary)">
-          No clear leader — the team is evenly split
+          {summaryText(groups, total, isUnanimous, isLeaderClear)}
         </p>
       )}
 
       <div className="flex flex-wrap items-center justify-center gap-4">
         {groups.map((group, index) => {
-          const color = colorForValue(group.value, fibSeries)
           const isLeading = isUnanimous || (isLeaderClear && group.value === top.value)
           const isDimmed = isLeaderClear && !isLeading
           return (
-            <motion.div
+            <VoteResultCard
               key={group.value}
-              className="relative flex w-28 flex-col items-center gap-3 rounded-2xl p-5"
-              style={
-                isLeading
-                  ? {
-                      background: hexToRgba(color, 0.16),
-                      border: `2px solid ${color}`,
-                      boxShadow: `0 4px 10px -4px ${hexToRgba(color, 0.35)}`,
-                    }
-                  : {
-                      background: hexToRgba(color, isDimmed ? 0.07 : 0.14),
-                      border: `1px solid ${hexToRgba(color, isDimmed ? 0.22 : 0.35)}`,
-                      opacity: isDimmed ? 0.75 : 1,
-                    }
-              }
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: isDimmed ? 0.75 : 1, y: 0, scale: isLeading ? 1.06 : 1 }}
-              transition={{ delay: index * 0.06, type: 'spring', stiffness: 260, damping: 22 }}
-            >
-              {isLeaderClear && isLeading && (
-                <span className="absolute -top-3 rounded-full bg-(--color-surface) px-2.5 py-1 text-[10px] font-semibold text-(--color-text-secondary) shadow-(--shadow-sm)">
-                  Most votes
-                </span>
-              )}
-              <div
-                className="flex items-center justify-center rounded-full font-extrabold text-white"
-                style={{
-                  background: color,
-                  width: isLeading ? '3.75rem' : '3.25rem',
-                  height: isLeading ? '3.75rem' : '3.25rem',
-                  fontSize: isLeading ? '1.5rem' : '1.25rem',
-                }}
-              >
-                {group.value}
-              </div>
-              <div className="flex flex-col items-center">
-                <span
-                  className="font-bold text-(--color-text-primary)"
-                  style={{ fontSize: isLeading ? '1.125rem' : '1rem' }}
-                >
-                  {group.count}
-                </span>
-                <span className="text-xs text-(--color-text-muted)">{group.count === 1 ? 'vote' : 'votes'}</span>
-              </div>
-            </motion.div>
+              value={group.value}
+              count={group.count}
+              color={colorForValue(group.value, fibSeries)}
+              isLeading={isLeading}
+              isDimmed={isDimmed}
+              showBadge={isLeaderClear && isLeading}
+              index={index}
+            />
           )
         })}
       </div>

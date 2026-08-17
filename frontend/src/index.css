@@ -30,3 +30,11 @@ body {
 :focus-visible {
   outline: none;
 }
+
+.bg-gradient-brand {
+  background: var(--gradient-brand);
+}
+
+.bg-gradient-glow {
+  background: var(--gradient-glow);
+}

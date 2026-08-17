@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { fetchRoom } from '../api'
 import { getAdminToken } from '../adminToken'
 import { getParticipantName, saveParticipantName } from '../participantName'
 import { useRoomSocket } from '../hooks/useRoomSocket'
 import JoinForm from '../components/JoinForm'
 import LoadingScreen from '../components/LoadingScreen'
+import NotFoundScreen from '../components/NotFoundScreen'
 import TopBar from '../components/TopBar'
 import Sidebar from '../components/Sidebar'
 import VoteSelector from '../components/VoteSelector'
@@ -14,6 +15,38 @@ import VoteBreakdown from '../components/VoteBreakdown'
 import AdminToolbar from '../components/AdminToolbar'
 
 type RoomLookupStatus = 'loading' | 'found' | 'not-found'
+
+interface HeadlineCopy {
+  headline: string
+  subtext: string
+}
+
+function getHeadlineCopy(isAdmin: boolean, revealed: boolean, hasVotes: boolean): HeadlineCopy {
+  if (isAdmin && !revealed) {
+    return {
+      headline: 'Waiting for your team',
+      subtext: hasVotes
+        ? 'Reveal whenever you’re ready, or wait for a few more votes.'
+        : 'Once your team starts voting, you’ll be able to reveal the results here.',
+    }
+  }
+  if (isAdmin && revealed) {
+    return {
+      headline: "Here's what the team said",
+      subtext: 'Discuss as a team, then reset to estimate the next ticket.',
+    }
+  }
+  if (!revealed) {
+    return {
+      headline: 'Time to estimate',
+      subtext: 'Select the value that best reflects the effort for this ticket.',
+    }
+  }
+  return {
+    headline: 'Votes are in',
+    subtext: 'You can still change your pick until the facilitator resets for the next ticket.',
+  }
+}
 
 function RoomPage(): ReactElement {
   const { roomId = '' } = useParams<{ roomId: string }>()
@@ -48,12 +81,11 @@ function RoomPage(): ReactElement {
 
   if (lookupStatus === 'not-found') {
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-4">
-        <h1 className="text-xl font-semibold text-(--color-text-primary)">Room not found</h1>
-        <Link to="/" className="text-(--color-accent) hover:underline">
-          Create a new room
-        </Link>
-      </div>
+      <NotFoundScreen
+        icon="pi-ban"
+        title="Room not found"
+        message="This link may be mistyped, expired, or the room was never created. Start a new session instead."
+      />
     )
   }
 
@@ -71,23 +103,7 @@ function RoomPage(): ReactElement {
   const estimators = participants.filter((p) => !p.is_admin)
   const hasVotes = estimators.some((p) => p.has_voted)
 
-  let headline = ''
-  let subtext = ''
-  if (isAdmin && !revealed) {
-    headline = 'Waiting for your team'
-    subtext = hasVotes
-      ? 'Reveal whenever you’re ready, or wait for a few more votes.'
-      : 'Once your team starts voting, you’ll be able to reveal the results here.'
-  } else if (isAdmin && revealed) {
-    headline = "Here's what the team said"
-    subtext = 'Discuss as a team, then reset to estimate the next ticket.'
-  } else if (!revealed) {
-    headline = 'Time to estimate'
-    subtext = 'Select the value that best reflects the effort for this ticket.'
-  } else {
-    headline = 'Votes are in'
-    subtext = 'You can still change your pick until the facilitator resets for the next ticket.'
-  }
+  const { headline, subtext } = getHeadlineCopy(isAdmin, revealed, hasVotes)
 
   return (
     <div className="flex min-h-svh flex-col bg-(--color-bg)">

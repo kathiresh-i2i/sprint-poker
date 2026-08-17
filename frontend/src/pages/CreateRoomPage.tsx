@@ -5,7 +5,10 @@ import type { ReactElement } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createRoom } from '../api'
 import { saveAdminToken } from '../adminToken'
-import { colorForValue } from '../voteColors'
+import FeatureCard from '../components/FeatureCard'
+import FibonacciPreview from '../components/FibonacciPreview'
+import Logo from '../components/Logo'
+import StepItem from '../components/StepItem'
 
 interface Highlight {
   icon: string
@@ -53,8 +56,6 @@ const STEPS: Step[] = [
       'Everyone picks a card in private. When the team is ready, reveal the votes together and discuss any gaps before locking in an estimate.',
   },
 ]
-
-const PREVIEW_SERIES = ['1', '2', '3', '5', '8']
 
 interface FaqItem {
   question: string
@@ -105,16 +106,11 @@ function CreateRoomPage(): ReactElement {
   return (
     <div className="flex flex-col">
       <div className="relative overflow-hidden px-4 pt-16 pb-12">
-        <div
-          className="pointer-events-none absolute -top-32 left-1/2 h-96 w-[36rem] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
-          style={{ background: 'radial-gradient(closest-side, var(--color-accent-soft), transparent)' }}
-        />
+        <div className="bg-gradient-glow pointer-events-none absolute -top-32 left-1/2 h-96 w-[36rem] -translate-x-1/2 rounded-full opacity-60 blur-3xl" />
 
         <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-10">
           <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-(--color-accent-soft) shadow-(--shadow-sm)">
-              <i className="pi pi-table text-2xl text-(--color-accent)" />
-            </div>
+            <Logo size="lg" variant="accent" className="shadow-(--shadow-sm)" />
             <h1 className="text-4xl font-bold tracking-tight text-(--color-text-primary)">Sprint Poker</h1>
             <p className="max-w-md text-(--color-text-secondary)">
               Planning poker for agile teams. Create a room, share the link, and estimate together in seconds.
@@ -134,16 +130,7 @@ function CreateRoomPage(): ReactElement {
 
           <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3">
             {HIGHLIGHTS.map((item) => (
-              <div
-                key={item.title}
-                className="flex flex-col items-center gap-2 rounded-xl border border-(--color-border) bg-(--color-surface) px-6 py-7 text-center shadow-(--shadow-xs)"
-              >
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-(--color-accent-soft)">
-                  <i className={`pi ${item.icon} text-(--color-accent)`} />
-                </div>
-                <p className="text-sm font-semibold text-(--color-text-primary)">{item.title}</p>
-                <p className="text-xs text-(--color-text-secondary)">{item.description}</p>
-              </div>
+              <FeatureCard key={item.title} icon={item.icon} title={item.title} description={item.description} />
             ))}
           </div>
         </div>
@@ -154,25 +141,7 @@ function CreateRoomPage(): ReactElement {
           <p className="text-xs font-semibold tracking-wide text-(--color-text-secondary) uppercase">
             A familiar Fibonacci scale
           </p>
-          <div className="flex items-end justify-center gap-3">
-            {PREVIEW_SERIES.map((value, index) => {
-              const color = colorForValue(value, PREVIEW_SERIES)
-              return (
-                <div
-                  key={value}
-                  className="flex h-20 w-14 flex-col overflow-hidden rounded-xl bg-(--color-bg) shadow-(--shadow-sm)"
-                  style={{ marginBottom: index === 2 ? 12 : 0 }}
-                >
-                  <div className="h-1.5 w-full" style={{ background: color }} />
-                  <div className="flex flex-1 items-center justify-center">
-                    <span className="text-xl font-extrabold" style={{ color }}>
-                      {value}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          <FibonacciPreview size="lg" cardClassName="bg-(--color-bg) shadow-(--shadow-sm) rounded-xl" />
           <p className="max-w-md text-center text-sm text-(--color-text-secondary)">
             No fifty-page point systems to agree on — just a simple, well-known scale your whole team already
             understands.
@@ -189,13 +158,7 @@ function CreateRoomPage(): ReactElement {
 
           <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
             {STEPS.map((step, index) => (
-              <div key={step.title} className="flex flex-col gap-2 text-center sm:text-left">
-                <span className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-(--color-accent) text-sm font-bold text-(--color-accent-contrast) sm:mx-0">
-                  {index + 1}
-                </span>
-                <h3 className="font-semibold text-(--color-text-primary)">{step.title}</h3>
-                <p className="text-sm text-(--color-text-secondary)">{step.description}</p>
-              </div>
+              <StepItem key={step.title} index={index + 1} title={step.title} description={step.description} />
             ))}
           </div>
         </div>
