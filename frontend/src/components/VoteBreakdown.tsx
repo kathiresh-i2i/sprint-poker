@@ -49,35 +49,55 @@ function VoteBreakdown({ estimators, fibSeries }: VoteBreakdownProps): ReactElem
         </p>
       )}
 
-      <div className="flex flex-wrap items-stretch justify-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4">
         {groups.map((group, index) => {
           const color = colorForValue(group.value, fibSeries)
-          const isLeading = isLeaderClear && group.value === top.value
+          const isLeading = isUnanimous || (isLeaderClear && group.value === top.value)
+          const isDimmed = isLeaderClear && !isLeading
           return (
             <motion.div
               key={group.value}
-              className="relative flex w-28 flex-col items-center gap-3 rounded-2xl border p-5"
-              style={{
-                background: hexToRgba(color, isUnanimous || isLeading ? 0.12 : 0.06),
-                borderColor: hexToRgba(color, isUnanimous || isLeading ? 0.55 : 0.25),
-              }}
+              className="relative flex w-28 flex-col items-center gap-3 rounded-2xl p-5"
+              style={
+                isLeading
+                  ? {
+                      background: hexToRgba(color, 0.16),
+                      border: `2px solid ${color}`,
+                      boxShadow: `0 4px 10px -4px ${hexToRgba(color, 0.35)}`,
+                    }
+                  : {
+                      background: hexToRgba(color, isDimmed ? 0.07 : 0.14),
+                      border: `1px solid ${hexToRgba(color, isDimmed ? 0.22 : 0.35)}`,
+                      opacity: isDimmed ? 0.75 : 1,
+                    }
+              }
               initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{ opacity: isDimmed ? 0.75 : 1, y: 0, scale: isLeading ? 1.06 : 1 }}
               transition={{ delay: index * 0.06, type: 'spring', stiffness: 260, damping: 22 }}
             >
-              {isLeading && (
-                <span className="absolute -top-2.5 rounded-full bg-(--color-surface) px-2 py-0.5 text-[10px] font-semibold text-(--color-text-secondary) shadow-(--shadow-sm)">
+              {isLeaderClear && isLeading && (
+                <span className="absolute -top-3 rounded-full bg-(--color-surface) px-2.5 py-1 text-[10px] font-semibold text-(--color-text-secondary) shadow-(--shadow-sm)">
                   Most votes
                 </span>
               )}
               <div
-                className="flex h-14 w-14 items-center justify-center rounded-full text-2xl font-extrabold text-white"
-                style={{ background: color }}
+                className="flex items-center justify-center rounded-full font-extrabold text-white"
+                style={{
+                  background: color,
+                  width: isLeading ? '3.75rem' : '3.25rem',
+                  height: isLeading ? '3.75rem' : '3.25rem',
+                  fontSize: isLeading ? '1.5rem' : '1.25rem',
+                }}
               >
                 {group.value}
               </div>
               <div className="flex flex-col items-center">
-                <span className="text-xl font-bold text-(--color-text-primary)">{group.count}</span>
+                <span
+                  className="font-bold text-(--color-text-primary)"
+                  style={{ fontSize: isLeading ? '1.125rem' : '1rem' }}
+                >
+                  {group.count}
+                </span>
                 <span className="text-xs text-(--color-text-muted)">{group.count === 1 ? 'vote' : 'votes'}</span>
               </div>
             </motion.div>
