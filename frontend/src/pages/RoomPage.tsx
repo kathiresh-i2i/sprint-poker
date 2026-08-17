@@ -6,6 +6,7 @@ import { getAdminToken } from '../adminToken'
 import { getParticipantName, saveParticipantName } from '../participantName'
 import { useRoomSocket } from '../hooks/useRoomSocket'
 import JoinForm from '../components/JoinForm'
+import LoadingScreen from '../components/LoadingScreen'
 import TopBar from '../components/TopBar'
 import Sidebar from '../components/Sidebar'
 import VoteSelector from '../components/VoteSelector'
@@ -42,7 +43,7 @@ function RoomPage(): ReactElement {
   const { status, roomState, isAdmin, myVote, vote, reveal, reset } = useRoomSocket(roomId, name, adminToken)
 
   if (lookupStatus === 'loading') {
-    return <p className="p-8 text-center text-(--color-text-muted)">Loading room…</p>
+    return <LoadingScreen message="Loading room…" />
   }
 
   if (lookupStatus === 'not-found') {
@@ -60,9 +61,13 @@ function RoomPage(): ReactElement {
     return <JoinForm onJoin={handleJoin} isCreator={Boolean(adminToken)} adminName={adminName} />
   }
 
-  const revealed = roomState?.revealed ?? false
-  const participants = roomState?.participants ?? []
-  const fibSeries = roomState?.fib_series ?? []
+  if (!roomState) {
+    return <LoadingScreen message="Joining room…" />
+  }
+
+  const revealed = roomState.revealed
+  const participants = roomState.participants
+  const fibSeries = roomState.fib_series
   const estimators = participants.filter((p) => !p.is_admin)
   const hasVotes = estimators.some((p) => p.has_voted)
 
