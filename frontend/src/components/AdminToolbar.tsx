@@ -14,7 +14,7 @@ function AdminToolbar({ revealed, hasVotes, onReveal, onReset }: AdminToolbarPro
       {!revealed ? (
         <Button label="Reveal votes" icon="pi pi-eye" disabled={!hasVotes} onClick={onReveal} />
       ) : (
-        <Button label="Reset votes" icon="pi pi-refresh" severity="secondary" onClick={onReset} />
+        <Button label="Reset votes" icon="pi pi-refresh" text severity="secondary" size="small" onClick={onReset} />
       )}
     </div>
   )

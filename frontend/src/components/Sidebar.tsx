@@ -32,14 +32,18 @@ function Sidebar({ estimators }: SidebarProps): ReactElement {
               <span className="flex-1 truncate text-sm text-(--color-text-primary)">{participant.name}</span>
 
               {participant.has_voted ? (
-                <span className="flex shrink-0 items-center gap-1 rounded-full bg-(--color-success-soft) px-2.5 py-1 text-xs font-medium text-(--color-success)">
-                  <i className="pi pi-check text-[10px]" />
-                  Voted
+                <span
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--color-success-soft) text-(--color-success)"
+                  title="Voted"
+                >
+                  <i className="pi pi-check text-xs" />
                 </span>
               ) : (
-                <span className="flex shrink-0 items-center gap-1 rounded-full bg-(--color-neutral-soft) px-2.5 py-1 text-xs font-medium text-(--color-text-muted)">
-                  <i className="pi pi-clock text-[10px]" />
-                  Waiting
+                <span
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-(--color-neutral-soft) text-(--color-text-muted)"
+                  title="Voting"
+                >
+                  <i className="pi pi-clock text-xs" />
                 </span>
               )}
             </li>
