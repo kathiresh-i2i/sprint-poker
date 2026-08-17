@@ -127,8 +127,7 @@ function CreateRoomPage(): ReactElement {
               icon="pi pi-plus"
               loading={isCreating}
               onClick={handleCreate}
-              size="large"
-              className="w-full max-w-sm"
+              className="w-full max-w-sm py-3 text-base"
             />
             {error && <p className="text-sm text-(--color-danger)">{error}</p>}
           </div>

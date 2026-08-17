@@ -107,8 +107,7 @@ function JoinForm({ onJoin, isCreator, adminName }: JoinFormProps): ReactElement
               label={isCreator ? 'Enter room' : 'Join room'}
               icon="pi pi-arrow-right"
               iconPos="right"
-              size="large"
-              className="w-full"
+              className="w-full py-3 text-base"
             />
           </form>
         </div>
