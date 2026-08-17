@@ -21,7 +21,7 @@ function Sidebar({ estimators }: SidebarProps): ReactElement {
           No one has joined yet. Share the room link so your team can hop in.
         </p>
       ) : (
-        <ul className="flex flex-col gap-1.5">
+        <ul className="flex flex-col gap-0.5">
           {estimators.map((participant) => (
             <ParticipantRow key={participant.id} participant={participant} />
           ))}

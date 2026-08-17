@@ -8,7 +8,7 @@ interface ParticipantRowProps {
 
 function ParticipantRow({ participant }: ParticipantRowProps): ReactElement {
   return (
-    <li className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-(--color-neutral-soft)">
+    <li className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-1 transition-colors hover:bg-(--color-neutral-soft)">
       <Avatar name={participant.name} variant="neutral" size="md" />
       <span className="flex-1 truncate text-sm text-(--color-text-primary)">{participant.name}</span>
 
