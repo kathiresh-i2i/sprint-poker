@@ -39,7 +39,7 @@ function getHeadlineCopy(isAdmin: boolean, revealed: boolean, hasVotes: boolean)
   if (!revealed) {
     return {
       headline: 'Time to estimate',
-      subtext: 'Select the value that best reflects the effort for this ticket.',
+      subtext: 'Pick the card that matches this ticket’s effort.',
     }
   }
   return {
@@ -121,7 +121,7 @@ function RoomPage(): ReactElement {
         <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10">
           <div className="max-w-sm text-center">
             <h1 className="text-2xl font-bold text-(--color-text-primary)">{headline}</h1>
-            <p className="mt-1 text-sm text-(--color-text-secondary)">{subtext}</p>
+            <p className="mt-3 text-sm text-(--color-text-secondary)">{subtext}</p>
           </div>
 
           {isAdmin && !revealed && (
