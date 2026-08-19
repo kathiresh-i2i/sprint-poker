@@ -50,7 +50,7 @@ function VoteSelector({ fibSeries, selectedValue, disabled, revealed = false, on
         })}
       </div>
 
-      <p className="mt-2 text-xs text-(--color-text-muted)">
+      <p className="mt-6 text-xs text-(--color-text-muted)">
         You can change your pick anytime until the facilitator resets
       </p>
     </div>

@@ -43,8 +43,8 @@ function getHeadlineCopy(isAdmin: boolean, revealed: boolean, hasVotes: boolean)
     }
   }
   return {
-    headline: 'Votes are in',
-    subtext: 'You can still change your pick until the facilitator resets for the next ticket.',
+    headline: "You're all set",
+    subtext: 'The facilitator is reviewing the team’s estimates.',
   }
 }
 

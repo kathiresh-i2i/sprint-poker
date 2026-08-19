@@ -1,14 +1,21 @@
 from __future__ import annotations
 
+import logging
+import os
 import secrets
 
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from . import metrics_store
 from .connection_manager import connection_manager
 from .models import FIB_SERIES, Participant
 from .room_store import room_store
+
+logger = logging.getLogger(__name__)
+
+ADMIN_METRICS_KEY = os.environ.get("ADMIN_METRICS_KEY", "changeme")
 
 app = FastAPI(title="Sprint Poker API")
 
@@ -18,6 +25,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def on_startup() -> None:
+    try:
+        metrics_store.init_db()
+    except Exception:
+        logger.exception("Failed to initialize metrics DB")
 
 
 class CreateRoomResponse(BaseModel):
@@ -30,9 +45,20 @@ def health_check() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/admin/metrics", response_model=metrics_store.AdminMetricsResponse)
+def get_admin_metrics(x_admin_key: str = Header(default="")) -> metrics_store.AdminMetricsResponse:
+    if x_admin_key != ADMIN_METRICS_KEY:
+        raise HTTPException(status_code=401, detail="Invalid admin key")
+    return metrics_store.get_rooms_summary()
+
+
 @app.post("/rooms", response_model=CreateRoomResponse)
 def create_room() -> CreateRoomResponse:
     room = room_store.create_room()
+    try:
+        metrics_store.record_room_created(room.id)
+    except Exception:
+        logger.exception("Failed to record room-created metric for room %s", room.id)
     return CreateRoomResponse(room_id=room.id, admin_token=room.admin_token)
 
 
@@ -54,11 +80,17 @@ async def room_socket(websocket: WebSocket, room_id: str) -> None:
 
     await websocket.accept()
     participant_id: str | None = None
+    metrics_row_id: int | None = None
 
     try:
         while True:
             message = await websocket.receive_json()
             msg_type = message.get("type")
+
+            try:
+                metrics_store.touch_room_activity(room_id)
+            except Exception:
+                logger.exception("Failed to touch room-activity metric for room %s", room_id)
 
             if msg_type == "join":
                 name = str(message.get("name", "")).strip()[:40] or "Anonymous"
@@ -69,6 +101,10 @@ async def room_socket(websocket: WebSocket, room_id: str) -> None:
                     id=participant_id, name=name, is_admin=is_admin
                 )
                 connection_manager.add(room_id, participant_id, websocket)
+                try:
+                    metrics_row_id = metrics_store.record_participant_joined(room_id, name, is_admin)
+                except Exception:
+                    logger.exception("Failed to record participant-joined metric for room %s", room_id)
                 await websocket.send_json(
                     {
                         "type": "welcome",
@@ -125,6 +161,11 @@ async def room_socket(websocket: WebSocket, room_id: str) -> None:
         if participant_id is not None:
             connection_manager.remove(room_id, participant_id)
             room.participants.pop(participant_id, None)
+            if metrics_row_id is not None:
+                try:
+                    metrics_store.record_participant_left(metrics_row_id)
+                except Exception:
+                    logger.exception("Failed to record participant-left metric for room %s", room_id)
             await connection_manager.broadcast(
                 room_id, {"type": "state", "room": room.public_dict()}
             )
