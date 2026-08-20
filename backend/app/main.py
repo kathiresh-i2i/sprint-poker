@@ -79,6 +79,7 @@ def get_room(room_id: str) -> dict:
 async def room_socket(websocket: WebSocket, room_id: str) -> None:
     room = room_store.get(room_id)
     if room is None:
+        await websocket.accept()
         await websocket.close(code=4004, reason="Room not found")
         return
 

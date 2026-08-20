@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { WS_BASE_URL } from '../config'
 import type { ClientMessage, RoomState, ServerMessage } from '../types'
 
-export type ConnectionStatus = 'connecting' | 'open' | 'closed'
+export type ConnectionStatus = 'connecting' | 'open' | 'closed' | 'failed'
 
 interface UseRoomSocketResult {
   status: ConnectionStatus
@@ -16,11 +16,14 @@ interface UseRoomSocketResult {
 }
 
 const RECONNECT_DELAY_MS = 2000
+const ROOM_NOT_FOUND_CODE = 4004
+const MAX_RECONNECT_ATTEMPTS = 10
 
 export function useRoomSocket(
   roomId: string,
   name: string | null,
   adminToken: string | null,
+  enabled: boolean = true,
 ): UseRoomSocketResult {
   const [status, setStatus] = useState<ConnectionStatus>('connecting')
   const [roomState, setRoomState] = useState<RoomState | null>(null)
@@ -32,6 +35,7 @@ export function useRoomSocket(
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const shouldReconnectRef = useRef(true)
   const participantIdRef = useRef<string | null>(null)
+  const reconnectAttemptsRef = useRef(0)
 
   const send = useCallback((message: ClientMessage) => {
     const socket = socketRef.current
@@ -41,9 +45,10 @@ export function useRoomSocket(
   }, [])
 
   useEffect(() => {
-    if (!name) return
+    if (!name || !enabled) return
 
     shouldReconnectRef.current = true
+    reconnectAttemptsRef.current = 0
 
     const connect = (): void => {
       setStatus('connecting')
@@ -53,6 +58,7 @@ export function useRoomSocket(
       socket.onopen = () => {
         if (socketRef.current !== socket) return
         setStatus('open')
+        reconnectAttemptsRef.current = 0
         socket.send(
           JSON.stringify({ type: 'join', name, admin_token: adminToken ?? undefined } satisfies ClientMessage),
         )
@@ -76,11 +82,21 @@ export function useRoomSocket(
         }
       }
 
-      socket.onclose = () => {
+      socket.onclose = (event) => {
         if (socketRef.current !== socket) return
-        setStatus('closed')
-        if (shouldReconnectRef.current) {
+
+        if (event.code === ROOM_NOT_FOUND_CODE) {
+          shouldReconnectRef.current = false
+          setStatus('failed')
+          return
+        }
+
+        if (shouldReconnectRef.current && reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+          setStatus('closed')
+          reconnectAttemptsRef.current += 1
           reconnectTimerRef.current = setTimeout(connect, RECONNECT_DELAY_MS)
+        } else {
+          setStatus('failed')
         }
       }
 
@@ -98,7 +114,7 @@ export function useRoomSocket(
       }
       socketRef.current?.close()
     }
-  }, [roomId, name, adminToken])
+  }, [roomId, name, adminToken, enabled])
 
   const vote = useCallback(
     (value: string) => {

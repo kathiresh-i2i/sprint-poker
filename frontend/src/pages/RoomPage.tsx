@@ -99,7 +99,12 @@ function RoomPage(): ReactElement {
     }
   }, [roomId])
 
-  const { status, roomState, isAdmin, myVote, vote, reveal, reset } = useRoomSocket(roomId, name, adminToken)
+  const { status, roomState, isAdmin, myVote, vote, reveal, reset } = useRoomSocket(
+    roomId,
+    name,
+    adminToken,
+    lookupStatus === 'found',
+  )
 
   if (lookupStatus === 'loading') {
     return <LoadingScreen message="Loading room…" />
@@ -117,6 +122,16 @@ function RoomPage(): ReactElement {
 
   if (!name) {
     return <JoinForm onJoin={handleJoin} isCreator={Boolean(adminToken)} adminName={adminName} />
+  }
+
+  if (!roomState && status === 'failed') {
+    return (
+      <NotFoundScreen
+        icon="pi-ban"
+        title="Room not found"
+        message="This room may have just ended. Start a new session instead."
+      />
+    )
   }
 
   if (!roomState) {

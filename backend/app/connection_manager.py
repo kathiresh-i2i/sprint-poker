@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import logging
+
 from fastapi import WebSocket
+
+logger = logging.getLogger(__name__)
 
 
 class ConnectionManager:
@@ -20,8 +24,12 @@ class ConnectionManager:
 
     async def broadcast(self, room_id: str, message: dict) -> None:
         room_connections = self._connections.get(room_id, {})
-        for websocket in list(room_connections.values()):
-            await websocket.send_json(message)
+        for participant_id, websocket in list(room_connections.items()):
+            try:
+                await websocket.send_json(message)
+            except Exception:
+                logger.info("Dropping dead connection for participant %s in room %s", participant_id, room_id)
+                self.remove(room_id, participant_id)
 
 
 connection_manager = ConnectionManager()
