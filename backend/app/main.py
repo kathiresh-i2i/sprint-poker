@@ -49,7 +49,11 @@ def health_check() -> dict:
 def get_admin_metrics(x_admin_key: str = Header(default="")) -> metrics_store.AdminMetricsResponse:
     if x_admin_key != ADMIN_METRICS_KEY:
         raise HTTPException(status_code=401, detail="Invalid admin key")
-    return metrics_store.get_rooms_summary()
+    try:
+        return metrics_store.get_rooms_summary()
+    except Exception:
+        logger.exception("Failed to read admin metrics")
+        raise HTTPException(status_code=503, detail="Metrics temporarily unavailable")
 
 
 @app.post("/rooms", response_model=CreateRoomResponse)

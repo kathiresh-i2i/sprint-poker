@@ -105,7 +105,7 @@ function CreateRoomPage(): ReactElement {
 
   return (
     <div className="flex flex-col">
-      <div className="relative overflow-hidden px-4 pt-16 pb-12">
+      <div className="relative overflow-hidden px-4 pt-10 pb-12">
         <div className="bg-gradient-glow pointer-events-none absolute -top-32 left-1/2 h-96 w-[36rem] -translate-x-1/2 rounded-full opacity-60 blur-3xl" />
 
         <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-10">

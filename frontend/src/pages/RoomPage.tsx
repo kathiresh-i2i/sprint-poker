@@ -13,6 +13,7 @@ import Sidebar from '../components/Sidebar'
 import VoteSelector from '../components/VoteSelector'
 import VoteBreakdown from '../components/VoteBreakdown'
 import AdminToolbar from '../components/AdminToolbar'
+import EstimationStatusCard from '../components/EstimationStatusCard'
 
 type RoomLookupStatus = 'loading' | 'found' | 'not-found'
 
@@ -21,14 +22,39 @@ interface HeadlineCopy {
   subtext: string
 }
 
-function getHeadlineCopy(isAdmin: boolean, revealed: boolean, hasVotes: boolean): HeadlineCopy {
-  if (isAdmin && !revealed) {
+function getAdminWaitingCopy(votedCount: number, participantCount: number): HeadlineCopy {
+  if (participantCount === 0) {
     return {
       headline: 'Waiting for your team',
-      subtext: hasVotes
-        ? 'Reveal whenever you’re ready, or wait for a few more votes.'
-        : 'Once your team starts voting, you’ll be able to reveal the results here.',
+      subtext: 'Share the room link below to invite your team in.',
     }
+  }
+  if (votedCount === 0) {
+    return {
+      headline: 'Your team is estimating',
+      subtext: 'Waiting on the team to finish estimating.',
+    }
+  }
+  if (votedCount === participantCount) {
+    return {
+      headline: 'Votes are coming in',
+      subtext: 'Everyone has voted — reveal whenever you’re ready.',
+    }
+  }
+  return {
+    headline: 'Votes are coming in',
+    subtext: 'Reveal whenever you’re ready, or wait for the rest of the team.',
+  }
+}
+
+function getHeadlineCopy(
+  isAdmin: boolean,
+  revealed: boolean,
+  votedCount: number,
+  participantCount: number,
+): HeadlineCopy {
+  if (isAdmin && !revealed) {
+    return getAdminWaitingCopy(votedCount, participantCount)
   }
   if (isAdmin && revealed) {
     return {
@@ -103,7 +129,9 @@ function RoomPage(): ReactElement {
   const estimators = participants.filter((p) => !p.is_admin)
   const hasVotes = estimators.some((p) => p.has_voted)
 
-  const { headline, subtext } = getHeadlineCopy(isAdmin, revealed, hasVotes)
+  const votedCount = estimators.filter((p) => p.has_voted).length
+  const { headline, subtext } = getHeadlineCopy(isAdmin, revealed, votedCount, estimators.length)
+  const isAdminWaiting = isAdmin && !revealed
 
   return (
     <div className="flex min-h-svh flex-col bg-(--color-bg)">
@@ -119,13 +147,25 @@ function RoomPage(): ReactElement {
         {isAdmin && <Sidebar estimators={estimators} />}
 
         <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-10">
-          <div className="max-w-sm text-center">
-            <h1 className="text-2xl font-bold text-(--color-text-primary)">{headline}</h1>
-            <p className="mt-3 text-sm text-(--color-text-secondary)">{subtext}</p>
-          </div>
+          {!isAdminWaiting && (
+            <div className="max-w-md text-center">
+              <h1 className="text-2xl font-bold text-(--color-text-primary)">{headline}</h1>
+              <p className="mt-3 text-sm text-(--color-text-secondary)">{subtext}</p>
+            </div>
+          )}
 
-          {isAdmin && !revealed && (
-            <AdminToolbar revealed={revealed} hasVotes={hasVotes} onReveal={reveal} onReset={reset} />
+          {isAdminWaiting && (
+            <EstimationStatusCard
+              headline={headline}
+              subtext={subtext}
+              votedCount={votedCount}
+              participantCount={estimators.length}
+              hasVotes={hasVotes}
+              shareLink={window.location.href}
+              shareDisplayPath={`${window.location.host}/room/${roomId}`}
+              onReveal={reveal}
+              onReset={reset}
+            />
           )}
 
           {isAdmin && revealed && (

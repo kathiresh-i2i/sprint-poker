@@ -15,7 +15,7 @@ const ARC_HEIGHT = 30
 
 function caption(selectedValue: string | null, revealed: boolean): string | null {
   if (selectedValue === null) return null
-  return revealed ? `Your pick: ${selectedValue}` : `You picked ${selectedValue} — waiting for others`
+  return revealed ? `Your pick: ${selectedValue}` : `You picked ${selectedValue}`
 }
 
 function VoteSelector({ fibSeries, selectedValue, disabled, revealed = false, onSelect }: VoteSelectorProps): ReactElement {
